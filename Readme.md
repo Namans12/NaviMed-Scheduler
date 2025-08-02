@@ -37,15 +37,26 @@ optimized_models/# Optimized model versions
 - Node.js 18+
 
 ### Installation
-cd backend
-pip install -r requirements.txt
-python main.py
-```
+## Backend Setup (FastAPI)
+
 ```bash
-cd frontend
-npm install
-npm run dev
+cd backend                 # Navigate to backend folder
+python -m venv venv       # (Optional) Create virtual environment
+source venv/bin/activate  # Activate on Linux/macOS
+venv\Scripts\activate     # Activate on Windows
+
+pip install -r requirements.txt  # Install backend dependencies
+python main.py                   # Run FastAPI backend
 ```
+
+## Frontend Setup (React / Next.js)
+
+```bash
+cd frontend       # Navigate to frontend folder
+npm install       # Install dependencies
+npm run dev       # Start the development server
+```
+
 
 - Book appointments via the chatbot interface
 - View analytics and manage schedules
@@ -60,4 +71,5 @@ npm run dev
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ## Contact
+
 For questions or support, please contact the project maintainer.

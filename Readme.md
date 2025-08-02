@@ -36,8 +36,9 @@ optimized_models/# Optimized model versions
 - Python 3.10+
 - Node.js 18+
 
-### Installation
-## Backend Setup (FastAPI)
+## Installation
+
+### Backend Setup (FastAPI)
 
 ```bash
 cd backend                 # Navigate to backend folder
@@ -49,7 +50,7 @@ pip install -r requirements.txt  # Install backend dependencies
 python main.py                   # Run FastAPI backend
 ```
 
-## Frontend Setup (React / Next.js)
+### Frontend Setup (React / Next.js)
 
 ```bash
 cd frontend       # Navigate to frontend folder
@@ -73,3 +74,4 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## Contact
 
 For questions or support, please contact the project maintainer.
+

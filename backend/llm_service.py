@@ -1,3 +1,4 @@
+# AI Vercel chatbot is integrated in frontend to interact with the website and book appointments!
 import openai
 import os
 from typing import Dict, List, Optional
@@ -13,7 +14,7 @@ class LLMService:
     def __init__(self):
         # Initialize OpenAI client
         openai.api_key = os.getenv("OPENAI_API_KEY")
-        self.model = "gpt-3.5-turbo"  # Can be upgraded to gpt-4 for better performance
+        self.model = "gpt-4.1"  # Update to gpt-5 for better performance
         
         # System prompt for healthcare context
         self.system_prompt = """You are NaviMed, an intelligent healthcare assistant for a patient appointment scheduling system. 

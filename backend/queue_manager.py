@@ -231,7 +231,7 @@ class DynamicQueueManager:
                 appointment_type = item["appointment_type"]
                 appointment_duration = appointment_durations.get(appointment_type, 15)
                 
-                # FIXED: Last patient (current patient) should have 0 wait time
+                # Last patient (current patient) should have 0 wait time
                 if position == total_patients:
                     # Last patient is the current patient - no wait time
                     estimated_wait_minutes = 0
@@ -318,8 +318,6 @@ class DynamicQueueManager:
     
     def _calculate_wait_time(self, patient: Patient) -> int:
         """Calculate estimated wait time for patient"""
-        # Simple calculation based on queue position and average consultation time
-        # In real implementation, this would consider doctor availability, current queue, etc.
         base_wait = 15  # Base consultation time in minutes
         
         # Adjust based on risk level

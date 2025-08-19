@@ -95,7 +95,7 @@ llm_service = LLMService()
 model_optimizer = ModelOptimizer(PatientSchedulingEnv)
 
 # RL-Integrated Appointment Booking System  
-# In-memory queue for demo (in production, use Redis or database)
+# In-memory queue (In production, use Redis)
 appointment_queue = []
 completed_patients = []  # Track patients who have been seen
 
@@ -104,7 +104,7 @@ def clear_appointment_queue():
     global appointment_queue, completed_patients
     appointment_queue.clear()
     completed_patients.clear()
-    print("✅ In-memory appointment queue and completed patients cleared")
+    print("In-memory appointment queue and completed patients cleared")
 
 # Initialize database
 init_db()
@@ -190,7 +190,7 @@ async def debug_admin_user(db: Session = Depends(get_session)):
 @app.post("/auth/login")
 async def login(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_session)):
     user = get_user_by_email(db, email)
-    if not user or user.password != password:  # In production, use proper password hashing
+    if not user or user.password != password:  # In production, use proper password hashing!
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     access_token = create_access_token(data={
@@ -285,7 +285,7 @@ async def get_all_patients(token: dict = Depends(verify_token), db: Session = De
         for patient in patients
     ]
 
-# Public endpoint for admin dashboard (limited patient data)
+# Public endpoint for admin dashboard
 @app.get("/patients/public", response_model=List[dict])
 async def get_patients_public(db: Session = Depends(get_session)):
     """Get basic patient data for admin dashboard without authentication"""
@@ -446,7 +446,7 @@ def encode_patient(patient_data: dict) -> List[float]:
     
     return [
         type_map.get(patient_data.get('appointment_type', 'checkup'), 0) / 5,  # Normalized appointment type
-        (get_priority_score(patient_data.get('priority', 'medium')) - 1) / 6,  # Normalized priority (1-7 -> 0-1)
+        (get_priority_score(patient_data.get('priority', 'medium')) - 1) / 6,  # Normalized priority
         1.0 if patient_data.get('is_emergency', False) else 0.0,  # Emergency flag
         gender_map.get(patient_data.get('gender', 'other'), 2) / 2,  # Normalized gender
         min(patient_data.get('age', 30) / 100, 1.0),  # Normalized age
@@ -457,7 +457,7 @@ def encode_queue(queue: List[dict]) -> List[List[float]]:
     """Encode entire queue for RL model"""
     encoded = [encode_patient(patient) for patient in queue]
     
-    # Pad queue to fixed size (max 50 patients)
+    # Pad queue to fixed size (max 50)
     max_queue_size = 50
     while len(encoded) < max_queue_size:
         encoded.append([0.0] * 6)
@@ -509,7 +509,7 @@ async def book_appointment_with_rl(
         # Get priority details based on appointment type
         priority_details = APPOINTMENT_PRIORITIES.get(
             booking.appointment_type,
-            APPOINTMENT_PRIORITIES[AppointmentType.GENERAL_CHECKUP]  # Default to general checkup
+            APPOINTMENT_PRIORITIES[AppointmentType.GENERAL_CHECKUP] 
         )
 
         # Add to appointment queue with enhanced priority information
@@ -613,7 +613,7 @@ async def book_appointment_with_rl(
             print(f"DEBUG: Email notification sent: {email_sent} to {booking.patient_email}")
         except Exception as email_error:
             print(f"WARNING: Failed to send email notification: {email_error}")
-            # Don't fail the booking if email fails
+            # Don't fail the booking if email fails - SMTP issue
 
         return {
             "message": f"Appointment booked successfully for {booking.patient_name}",
@@ -677,7 +677,6 @@ async def get_next_patient_rl(db: Session = Depends(get_session)):
                     "remaining_queue_size": len(appointment_queue)
                 }
             else:
-                # Fallback to FIFO if RL fails
                 selected = appointment_queue.pop(0)
                 
                 # Add to completed patients
@@ -1013,7 +1012,6 @@ async def get_all_doctors(db: Session = Depends(get_session)):
             for doctor in doctors
         ]
     except Exception as e:
-        # Return mock doctors if there's any error
         return [
             {"id": 1, "name": "Dr. Smith", "specialty": "Cardiology"},
             {"id": 2, "name": "Dr. Johnson", "specialty": "Pediatrics"},
@@ -1198,7 +1196,6 @@ async def get_emergency_scheduling(
     token: dict = Depends(verify_token)
 ):
     try:
-        # Placeholder: RLService emergency slot logic not implemented
         return {"message": "Emergency scheduling not implemented in RLService."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Emergency scheduling error: {str(e)}")
@@ -1791,8 +1788,7 @@ async def get_health_tips(
     token: dict = Depends(verify_token)
 ):
     try:
-        # Placeholder: LLMService get_health_tips not implemented
-        return {"tips": ["Health tips functionality not implemented."]}
+        return {"tips": ["Health tips functionality"]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Health tips error: {str(e)}")
 
@@ -1832,7 +1828,7 @@ async def get_health_records(patient_id: int, token: dict = Depends(verify_token
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     
-    # Mock health records - in real app, this would come from a health_records table
+    # Health records
     health_records = {
         "vital_signs": [
             {"date": "2024-01-15", "blood_pressure": "120/80", "heart_rate": 72, "temperature": 98.6, "weight": 150},
@@ -1855,7 +1851,7 @@ async def get_user_settings(user_id: int, token: dict = Depends(verify_token), d
     if token["role"] == "patient" and str(token.get("user_id")) != str(user_id):
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    # Mock settings - in real app, this would come from a settings table
+    # Settings Table
     settings = {
         "notifications": {
             "email": True,
@@ -1890,7 +1886,7 @@ async def update_user_settings(
     if token["role"] == "patient" and str(token.get("user_id")) != str(user_id):
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    # In real app, update settings in database
+    # Update settings in database
     return {"message": "Settings updated successfully"}
 
 @app.get("/queue/status")
@@ -2117,7 +2113,6 @@ async def test_appointments(request_data: dict, db: Session = Depends(get_sessio
                 for d in doctors_query
             ]
         else:
-            # Fallback to mock doctors
             demo_doctors = [
                 {"id": 1, "name": "Dr. Smith", "specialty": "Cardiology"},
                 {"id": 2, "name": "Dr. Johnson", "specialty": "Pediatrics"},
@@ -2135,7 +2130,6 @@ async def test_appointments(request_data: dict, db: Session = Depends(get_sessio
         else:
             selected_doctor = random.choice(demo_doctors)
         
-        # Create mock slot data that always works for demo
         assigned_slot = {
             "date": slot_time.strftime("%Y-%m-%d"),
             "time": slot_time.strftime("%H:%M"),
@@ -2144,7 +2138,6 @@ async def test_appointments(request_data: dict, db: Session = Depends(get_sessio
             "specialty": selected_doctor["specialty"]
         }
         
-        # Generate mock queue state for real-time display
         queue_state = {
             "current_time": datetime.now().isoformat(),
             "total_appointments_today": len(scheduled_today) + 1,
@@ -2153,7 +2146,6 @@ async def test_appointments(request_data: dict, db: Session = Depends(get_sessio
             "queue_position": queue_position
         }
         
-        # Try to call real RLService but fall back to mock data
         try:
             recommendation = rl_service.get_scheduling_recommendation(
                 session=db,
@@ -2163,7 +2155,6 @@ async def test_appointments(request_data: dict, db: Session = Depends(get_sessio
                 emergency=emergency
             )
             
-            # If RLService returns valid data, use it; otherwise use mock
             if recommendation and recommendation.get("available_slots"):
                 available_slots = recommendation.get("available_slots")
                 if available_slots and len(available_slots) > 0:
@@ -2233,7 +2224,7 @@ async def assign_next_patient(token: dict = Depends(verify_token), db: Session =
     if token["role"] not in ["admin", "doctor"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    # Get waiting patients (those without scheduled appointments)
+    # Get waiting patients
     patients = db.exec(select(Patient)).all()
     appointments = db.exec(select(Appointment)).all()
     

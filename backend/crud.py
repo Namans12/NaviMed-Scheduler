@@ -12,7 +12,7 @@ def create_user(db: Session, email: str, password: str, name: str, role: str) ->
     """Create a new user"""
     db_user = User(
         email=email,
-        password=password,  # In production, hash this password
+        password=password,  # Hashing will be done for Production
         name=name,
         role=role
     )

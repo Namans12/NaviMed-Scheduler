@@ -2,14 +2,14 @@ from sqlmodel import SQLModel, create_engine, Session
 from typing import Generator
 import os
 
-# Database URL - using SQLite for development
+# Database URL - SQLite
 DATABASE_URL = "sqlite:///./patient_scheduling.db"
 
 # Create engine
 engine = create_engine(
     DATABASE_URL, 
-    echo=True,  # Set to False in production
-    connect_args={"check_same_thread": False}  # Needed for SQLite
+    echo=True,  # In production, echo should be False
+    connect_args={"check_same_thread": False}  
 )
 
 def create_db_and_tables():
@@ -59,7 +59,7 @@ def clear_all_data_except_admin():
             for appointment in appointments:
                 session.delete(appointment)
             
-            # Clear all doctors (optional - you can comment this out if you want to keep doctors)
+            # Clear all doctors
             doctors = session.exec(select(Doctor)).all()
             for doctor in doctors:
                 session.delete(doctor)
@@ -70,10 +70,10 @@ def clear_all_data_except_admin():
                 session.delete(time_slot)
             
             session.commit()
-            print("✅ Cleared all patients, appointments, and queue data")
+            print("Cleared all patients, appointments, and queue data")
             
         except Exception as e:
             session.rollback()
-            print(f"❌ Error clearing data: {e}")
+            print(f"Error clearing data: {e}")
         finally:
             session.close() 

@@ -172,9 +172,9 @@ class DoctorResponse(BaseModel):
 
 class AppointmentRequest(BaseModel):
     patient_id: int
-    doctor_id: Optional[int] = None  # Optional for RL scheduling
-    appointment_date: Optional[datetime] = None  # Use this instead of preferred_date
-    preferred_date: Optional[datetime] = None  # Keep for compatibility
+    doctor_id: Optional[int] = None 
+    appointment_date: Optional[datetime] = None  
+    preferred_date: Optional[datetime] = None  
     appointment_type: AppointmentType
     priority: PriorityLevel = PriorityLevel.MEDIUM
     notes: Optional[str] = None

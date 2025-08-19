@@ -72,7 +72,6 @@ class NotificationService:
         self.smtp_password = os.getenv("SMTP_PASSWORD")
         self.from_email = os.getenv("FROM_EMAIL", "noreply@navimed.com")
         
-        # Mock storage - in production, use database
         self.notifications: List[Notification] = []
         self.user_preferences: Dict[int, Dict[str, bool]] = {}
 
@@ -394,13 +393,11 @@ This is an automated message. Please do not reply directly to this email.
 
     def _send_sms(self, notification: Notification) -> bool:
         """Send SMS notification (mock implementation)"""
-        # In production, integrate with SMS service like Twilio
         print(f"SMS to {notification.data.get('phone', 'N/A')}: {notification.message}")
         return True
 
     def _send_push(self, notification: Notification) -> bool:
         """Send push notification (mock implementation)"""
-        # In production, integrate with push notification service
         print(f"Push notification to user {notification.user_id}: {notification.title}")
         return True
 

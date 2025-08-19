@@ -252,7 +252,7 @@ class HealthcareAnalytics:
     
     def generate_revenue_analysis(self, appointments: List[Dict]) -> Dict[str, Any]:
         """Generate revenue analysis (mock data)"""
-        # In a real system, this would use actual billing data
+        # Actual billing data will be used when deployed for Production!
         total_revenue = 0
         revenue_by_type = defaultdict(float)
         revenue_by_month = defaultdict(float)
